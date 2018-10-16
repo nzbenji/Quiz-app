@@ -7,7 +7,7 @@ const App = (function(){
     const trackerEle = document.querySelector(".quiz__tracker");
     const taglineEle = document.querySelector(".quiz__tagline");
     const choicesEle = document.querySelector(".quiz__choices");
-    //const progressInnerEle = document.querySelector(".progress__inner")
+    const progressInnerEle = document.querySelector(".progress__inner")
     const nextButtonEle = document.querySelector(".next");
     const resetButtonEle = document.querySelector(".restart");
 
@@ -78,6 +78,29 @@ const App = (function(){
         //index+1 allows us to start from number 1 rather than 0
         setValue(trackerEle, `${index+1} of ${quiz.questions.length}`);
     }
+
+    const getPercentage = (num1, num2) => {
+        // ex. (1/4) > .25 > * 100 = 25%
+        return Math.round((num1/num2) * 100)
+    }
+
+    const loadBar = (width, maxPercent) => {
+        let loadingBar = setInterval(function() {
+            if (width > maxPercent) {
+                clearInterval(loadingBar);
+            } else {
+                //If width is not greater than max %, we can increase the width for the DOM element
+                width++;
+                progressInnerEle.style.width = `${width}%`
+            }
+        }, 3); //.3s progress bar load
+    }
+
+    //Renders progress on screen (e.g 25%, 50%...) based on how many questions there are
+    const renderProgress = () => {
+        const currentWidth = getPercentage(quiz.currentIndex, quiz.questions.length);
+        loadBar(0, currentWidth)
+    }
     
     const renderEndScreen = _ => {
         setValue(quizQuestionEle, `Great Job!`);
@@ -98,6 +121,7 @@ const App = (function(){
             renderQuestion();
             renderChoices();
             renderTracker();
+            renderProgress();
         }
     }
 
